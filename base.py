@@ -9,7 +9,6 @@ db_connection = sqlite3.connect('test.db')
 cursor = db_connection.cursor()
 
 # create a table named sensor_data if it does not already exist
-# table contains an autoincremented id as the primary key, a date_time text column, a soil_moisture integer column, and a water_level text column
 def create_table():
     cursor.execute('CREATE TABLE IF NOT EXISTS sensor_data(id INTEGER PRIMARY KEY AUTOINCREMENT, date_time TEXT, soil_moisture INTEGER, water_level TEXT)')
 
@@ -18,6 +17,19 @@ def dynamic_data_etry(serial_value):
     date_time = str(time.strftime("%m.%d.%y %H:%M:%S", time.localtime()))
     # strip the last 3 characters of the string to get the soil moisture value
     soil_moisture = serial_value[:-3]
+    try:
+        # fault tolerance: try to cast it to an int
+        # if it is not able to cast to an int then it is garbled data because soil moisture should be an int
+        # if it is less than 0 or greater than 1023 then it is garbled data because that would be outside of the range of possible values
+        x = int(soil_moisture)
+        if (x < 0 or x > 1023):
+            cursor.execute('INSERT INTO  sensor_data(date_time, soil_moisture, water_level) VALUES (?, ?, ?)', ('Error: Soil moisture value out of range', 0, 'Error: Soil moisture value'))
+            db_connection.commit()
+            return 
+    except ValueError:
+        cursor.execute('INSERT INTO  sensor_data(date_time, soil_moisture, water_level) VALUES (?, ?, ?)', ('Error: Non-integer soil moisture value', 0, 'Error: Non-integer soil moisture value'))
+        db_connection.commit()
+        return
     # grab the character at the 3 index from the end
     water_level = serial_value[-3]
     # if it is an 'e' then set water level to 'empty'
@@ -26,9 +38,9 @@ def dynamic_data_etry(serial_value):
     # if it is a 'f' then set water level to 'full'
     elif (water_level == 'f'):
         water_level = 'full'
-    # falut tolerance: if it is neither then flag it as garbled data and return
+    # fault tolerance: if it is neither e or f then flag it as garbled data
     else:
-        cursor.execute('INSERT INTO  sensor_data(date_time, soil_moisture, water_level) VALUES (?, ?, ?)', ('Unknown water level value', 0, 'Unknown water level value'))
+        cursor.execute('INSERT INTO  sensor_data(date_time, soil_moisture, water_level) VALUES (?, ?, ?)', ('Error: Unknown water level value', 0, 'Error: Unknown water level value'))
         db_connection.commit()
         return
     # insert data into the table
