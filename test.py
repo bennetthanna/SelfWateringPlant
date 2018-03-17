@@ -25,7 +25,7 @@ def display_data():
     alert = False
     # if the most recent row's water level value is 'empty' then set the alert to refill
     if rows[-1][3] == 'empty':
-    	alert = 'REFILL'
+    	alert = 'REFILL YO WATER'
     # render the template to display the data
     return render_template('display_data.html', rows = rows, alert = alert)
 

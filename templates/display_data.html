@@ -1,15 +1,18 @@
 {% extends "bootstrap/base.html" %}
 {% block title %} Soil ROCKS!!! {% endblock %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
 <!-- Navigation Bar -->
 {% block navbar %}
    <nav class="navbar navbar-default" role="navigation">
       <div class="container">
          <div class="navbar-header">
-            <a class="navbar-brand" href="{{ url_for('display_data') }}"><button>REFRESH YO PLANT'S DATA!</button></a> 
-            {% if alert %}
-            <p><strong>ALERT:</strong> {{ alert }}
-            {% endif %}
+            
          </div>
       </div>
    </nav>
@@ -17,15 +20,19 @@
 <!-- Content -->
 {% block content %}
    <div class="container">
-      <div class="header" align="center"><h1>Soil Sensor data</h1></div>
+      <a href="{{ url_for('display_data') }}"><button>REFRESH YO PLANT'S DATA!</button></a><br>
+      {% if alert %}
+      <h4><strong>ALERT:</strong> {{ alert }}</h4>
+      {% endif %}
+      <div><h1>Soil Sensor Data</h1></div>
 
       <!-- Table -->
       <table class="table table-hover">
-         <thead>
-            <td><strong><font size="5">Id</strong></font></td>
-            <td><strong><font size="5">Timestamp</strong></font></td>
-            <td><strong><font size="5">Soil Moisture</strong></font></td>
-            <td><strong><font size="5">Water Level</strong></font></td>
+         <thead class="table-header">
+            <td>Id</td>
+            <td>Timestamp</td>
+            <td>Soil Moisture</td>
+            <td>Water Level</td>
          </thead>
          
          {% for row in rows %}
