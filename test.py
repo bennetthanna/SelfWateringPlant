@@ -1,10 +1,12 @@
 from flask import Flask, render_template, g
+from flask_bootstrap import Bootstrap
 import sqlite3
 import signal
 
 # usage: python test.py
 
 app = Flask(__name__)
+Bootstrap(app)
 
 @app.before_request
 def before_request():

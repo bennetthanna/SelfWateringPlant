@@ -1,20 +1,31 @@
-<!doctype html>
-<html>
-   <body>
-      <!-- if there are alerts then display them -->
-      {% if alert %}
-      <p><strong>ALERT:</strong> {{ alert }}
-      {% endif %}
+{% extends "bootstrap/base.html" %}
+{% block title %} Soil ROCKS!!! {% endblock %}
 
-      <!-- button to pull down the most recent data and refresh the display -->
-      <a href="{{ url_for('display_data') }}"><button>REFRESH</button></a> 
-      <!-- display the data in a table -->
-      <table border = 1>
+<!-- Navigation Bar -->
+{% block navbar %}
+   <nav class="navbar navbar-default" role="navigation">
+      <div class="container">
+         <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('display_data') }}"><button>REFRESH YO PLANT'S DATA!</button></a> 
+            {% if alert %}
+            <p><strong>ALERT:</strong> {{ alert }}
+            {% endif %}
+         </div>
+      </div>
+   </nav>
+{% endblock %}
+<!-- Content -->
+{% block content %}
+   <div class="container">
+      <div class="header" align="center"><h1>Soil Sensor data</h1></div>
+
+      <!-- Table -->
+      <table class="table table-hover">
          <thead>
-            <td>Id</td>
-            <td>Timestamp</td>
-            <td>Soil Moisture</td>
-            <td>Water Level</td>
+            <td><strong><font size="5">Id</strong></font></td>
+            <td><strong><font size="5">Timestamp</strong></font></td>
+            <td><strong><font size="5">Soil Moisture</strong></font></td>
+            <td><strong><font size="5">Water Level</strong></font></td>
          </thead>
          
          {% for row in rows %}
@@ -26,5 +37,5 @@
             </tr>
          {% endfor %}
       </table>
-   </body>
-</html>
+   </div> 
+{% endblock %}
