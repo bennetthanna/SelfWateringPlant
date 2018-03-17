@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+   <body>
+      <!-- if there are alerts then display them -->
+      {% if alert %}
+      <p><strong>ALERT:</strong> {{ alert }}
+      {% endif %}
+
+      <!-- button to pull down the most recent data and refresh the display -->
+      <a href="{{ url_for('display_data') }}"><button>REFRESH</button></a> 
+      <!-- display the data in a table -->
+      <table border = 1>
+         <thead>
+            <td>Id</td>
+            <td>Timestamp</td>
+            <td>Soil Moisture</td>
+            <td>Water Level</td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{ row[0] }}</td>
+               <td>{{ row[1] }}</td>
+               <td>{{ row[2] }}</td>
+               <td>{{ row[3] }}</td>
+            </tr>
+         {% endfor %}
+      </table>
+   </body>
+</html>
