@@ -12,7 +12,7 @@ cursor = db_connection.cursor()
 def create_table():
     cursor.execute('CREATE TABLE IF NOT EXISTS sensor_data(id INTEGER PRIMARY KEY AUTOINCREMENT, date_time TEXT, soil_moisture INTEGER, water_level TEXT)')
 
-def dynamic_data_etry(serial_value):
+def dynamic_data_entry(serial_value):
     # create timestamp from localtime
     date_time = str(time.strftime("%m.%d.%y %H:%M:%S", time.localtime()))
     # strip the last 3 characters of the string to get the soil moisture value
@@ -30,7 +30,7 @@ def dynamic_data_etry(serial_value):
         cursor.execute('INSERT INTO  sensor_data(date_time, soil_moisture, water_level) VALUES (?, ?, ?)', ('Error: Non-integer soil moisture value', 0, 'Error: Non-integer soil moisture value'))
         db_connection.commit()
         return
-    # grab the character at the 3 index from the end
+    # grab the character at the 3rd index from the end
     water_level = serial_value[-3]
     # if it is an 'e' then set water level to 'empty'
     if (water_level == 'e'):
@@ -79,14 +79,19 @@ while 1:
     try:
         serial_data = serial_connection.readline()
         print serial_data
-        dynamic_data_etry(serial_data)
-    # fault tolerance: exit gracefully when Arduino is no longer receiving data
-    # after the timeout occurs it will return whatever data it has recevied thus far
-    # in this case it will be nothing and thus will cause an IndexError when we try to parse the serial data
-    # when an IndexError occurs it indicates the Arduino has not received data for the full timeout time
-    except IndexError:
-        print "Not receiving data. Exiting."
+        # fault tolerance: exit gracefully when Arduino is no longer receiving data
+        # after the timeout occurs it will return whatever data it has recevied thus far
+        # in this case it will be nothing which will indicate the Arduino has not received data for the full timeout time
+        # it should receive data every 5 seconds
+        if (serial_data == ''):
+            print "No longer receiving data. Exiting."
+            serial_connection.close()
+            db_connection.close()
+            sys.exit(0)
+        else:
+            dynamic_data_entry(serial_data)
+    except:
+        print "Done"
         serial_connection.close()
         db_connection.close()
         sys.exit(0)
-    
